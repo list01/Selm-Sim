@@ -1,0 +1,9 @@
+*.pyc
+__pycache__/
+data/plots/
+data/generated_graphs/
+*.csv
+*.log
+.idea/
+.vscode/
+data/

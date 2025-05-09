@@ -1,0 +1,9 @@
+{ 
+    "num_symbols": 50, 
+    "num_pairs": 100, 
+    "chua_alpha": 15.6, 
+    "cme_decay_rate": 0.1, 
+    "max_recursion": 50, 
+    "fractal_branch": 3, 
+    "fractal_depth": 5 
+}
