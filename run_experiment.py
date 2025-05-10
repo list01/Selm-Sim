@@ -6,8 +6,8 @@ from src.main import run_experiment
 def main(): 
     """运行单次实验""" 
     parser = argparse.ArgumentParser(description="运行 SelmæSim 实验") 
-    # 修改默认配置文件路径
-    parser.add_argument("--config", type=str, default="experiments/configs/new_config.json", help="配置文件路径") 
+    # 修改默认配置文件路径为实际存在的文件
+    parser.add_argument("--config", type=str, default="experiments/configs/default.json", help="配置文件路径") 
     args = parser.parse_args() 
 
     try:

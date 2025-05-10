@@ -1,8 +1,11 @@
-# ... existing code ...
+import logging
+
+# 配置日志记录
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 from .symbol import Symbol, generate_symbol_pairs  # 使用相对导入
-# ... existing code ...
 
 def run_experiment(config: dict) -> dict: 
+    logging.info(f"开始运行实验，配置: {config}")
     """运行单次实验 
     参数: 
         config: 配置字典 (num_symbols, chua_alpha 等) 
@@ -68,6 +71,7 @@ def run_experiment(config: dict) -> dict:
     plot_chua_attractor(trajectory, "data/plots") 
     plot_graph(G, "data/plots") 
  
+    logging.info(f"实验结束，结果: {results}")
     return results 
  
 if __name__ == "__main__": 
