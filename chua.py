@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.integrate import odeint
+import matplotlib.pyplot as plt
 
 def chua_circuit(x, t, alpha=15.6, beta=28, m0=-1.143, m1=-0.714):
     def f(x):
@@ -12,23 +13,16 @@ def chua_circuit(x, t, alpha=15.6, beta=28, m0=-1.143, m1=-0.714):
     ]
     return dxdt
 
-def simulate_chua(alpha: float = 15.6, beta: float = 28, m0: float = -1.143, m1: float = -0.714, initial_state: np.ndarray = np.array([0.1, 0, 0]), t_max: float = 100, dt: float = 0.01) -> np.ndarray: 
-    """模拟 Chua 电路轨迹 
-    参数: 
-        alpha: 控制参数 (默认 15.6) 
-        beta: 控制参数 (默认 28) 
-        m0: 非线性参数 (默认 -1.143) 
-        m1: 非线性参数 (默认 -0.714) 
-        initial_state: 初始状态 [x, y, z] (默认 [0.1, 0, 0]) 
-        t_max: 模拟时间 (默认 100) 
-        dt: 时间步长 (默认 0.01) 
-    返回: 
-        轨迹数组 (时间步, [x, y, z]) 
-    """ 
-    t = np.arange(0, t_max, dt) 
-    trajectory = odeint(chua_circuit, initial_state, t, args=(alpha, beta, m0, m1)) 
-    return trajectory 
+def simulate_chua(initial_state=[0.1, 0, 0], t_max=100, dt=0.01):
+    t = np.arange(0, t_max, dt)
+    sol = odeint(chua_circuit, initial_state, t)
+    return sol
 
+def plot_chua(sol):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot(sol[:, 0], sol[:, 1], sol[:, 2])
+    plt.show()
 def compute_lyapunov(alpha: float = 15.6, beta: float = 28, m0: float = -1.143, m1: float = -0.714, initial_state: np.ndarray = np.array([0.1, 0, 0]), t_max: float = 100, dt: float = 0.01, transient_time: float = 10.0) -> float: 
     """使用 QR 分解计算最大 Lyapunov 指数 
     参数: 

@@ -203,3 +203,73 @@ if __name__ == "__main__":
     } 
     results = run_experiment(config) 
     print(f"结果: Φ={results['phi'][-1]}, 闭合率={results['closure_rate'][-1]}, Lyapunov={results['lyapunov'][-1]}")
+
+
+import numpy as np
+
+class QLearning:
+    def __init__(self, state_dim, action_dim, learning_rate=0.1, discount_factor=0.9):
+        self.state_dim = state_dim
+        self.action_dim = action_dim
+        self.learning_rate = learning_rate
+        self.discount_factor = discount_factor
+        self.q_table = np.zeros((state_dim, action_dim))
+
+    def get_action(self, state):
+        return np.argmax(self.q_table[state])
+
+    def update(self, state, action, reward, next_state):
+        predict = self.q_table[state][action]
+        target = reward + self.discount_factor * np.max(self.q_table[next_state])
+        self.q_table[state][action] += self.learning_rate * (target - predict)
+
+def simulate_chua(alpha=15.6):
+    """
+    模拟 Chua 电路
+    """
+    # 简化的 Chua 电路模拟
+    t = np.linspace(0, 100, 1000)
+    x = np.sin(t) * alpha
+    y = np.cos(t) * alpha
+    trajectory = np.column_stack((x, y))
+    return trajectory
+
+def compute_lyapunov(alpha=15.6):
+    """
+    计算 Lyapunov 指数
+    """
+    # 简化的 Lyapunov 指数计算
+    return alpha * 0.1
+
+def chua_criticality(lyapunov):
+    """
+    计算 Chua 电路的临界性
+    """
+    return lyapunov > 0
+
+def compute_entanglement_entropy(emotional_weight: float) -> float:
+    """
+    计算纠缠熵
+    """
+    w = min(abs(emotional_weight), 1)
+    rho = np.array([[w**2, 0], [0, 1 - w**2]])
+    eigenvalues = np.linalg.eigvals(rho)
+    return -np.sum(eigenvalues * np.log2(eigenvalues + 1e-10))
+
+def compute_reward(phi, action_diff, s_ent):
+    """
+    计算强化学习的奖励
+    """
+    return phi - action_diff + s_ent
+
+def compute_closure_rate(symbol_pairs, G):
+    # 实现闭合率计算逻辑
+    pass
+
+def compute_entanglement_entropy(weight):
+    # 实现纠缠熵计算逻辑
+    pass
+
+def compute_holographic_entropy(reflected, phi, memory):
+    # 实现全息熵计算逻辑
+    pass
