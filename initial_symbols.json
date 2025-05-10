@@ -5,8 +5,4 @@
         "symbol3"
     ]
 }
-r requirements.txt
-pip: The term 'pip' is not recognized as a name of a cmdlet, function, script file, or executable program.
-Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
 
-Suggestion [4,General]: The most similar commands are:
