@@ -1,11 +1,124 @@
 import logging
+import random 
+import json 
+from typing import List, Dict, Any, Union 
+import time 
+import math 
+import logging
+import networkx as nx
 
 # 配置日志记录
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 from .symbol import Symbol, generate_symbol_pairs  # 使用相对导入
 
+class CMEEngine: 
+    def __init__(self): 
+        self.symbol_chains = [] 
+        self.long_term_memory = {} 
+        self.feedback_history = [] 
+        self.interdisciplinary_knowledge = {} 
+        self.contextual_weights = {} 
+        self.memory_strength = {} 
+        self.last_access_time = {} 
+ 
+    def generate_symbol_chain(self, context: str) -> List[str]: 
+        words = context.split() 
+        symbol_chain = [] 
+        for word in words: 
+            related_symbols = self.get_related_symbols(word) 
+            if related_symbols: 
+                selected_symbol = random.choice(related_symbols) 
+                symbol_chain.append(selected_symbol) 
+                self.update_memory_strength(selected_symbol) 
+            else: 
+                symbol_chain.append(word) 
+                self.update_memory_strength(word) 
+            self.update_last_access_time(word) 
+        self.symbol_chains.append(symbol_chain) 
+        return symbol_chain 
+ 
+    def get_related_symbols(self, word: str) -> List[str]: 
+        if word in self.long_term_memory: 
+            return self.long_term_memory[word] 
+        return [] 
+ 
+    def update_memory_strength(self, symbol: str): 
+        current_time = time.time() 
+        last_access = self.last_access_time.get(symbol, current_time) 
+        time_decay = math.exp(-(current_time - last_access) / (60 * 60 * 24)) 
+        self.memory_strength[symbol] = self.memory_strength.get(symbol, 1) * time_decay + 0.1 
+        if self.memory_strength[symbol] > 10: 
+            self.memory_strength[symbol] = 10 
+ 
+    def update_last_access_time(self, symbol: str): 
+        self.last_access_time[symbol] = time.time() 
+ 
+    def symbol_chain_consistency_check(self, symbol_chain: List[str]) -> bool: 
+        for i in range(len(symbol_chain) - 1): 
+            if not self.is_consistent(symbol_chain[i], symbol_chain[i+1]): 
+                return False 
+        return True 
+ 
+    def is_consistent(self, symbol1: str, symbol2: str) -> bool: 
+        # 更复杂的符号一致性检查，可以根据上下文和语义关联进一步扩展 
+        return (symbol1[0] == symbol2[0] or symbol1[-1] == symbol2[-1]) and len(set(symbol1).intersection(set(symbol2))) > 0 
+ 
+    def feedback_loop(self, context: str, feedback: str, feedback_type: str = 'neutral') -> None: 
+        self.feedback_history.append((context, feedback, feedback_type)) 
+        self.integrate_feedback(context, feedback, feedback_type) 
+ 
+    def integrate_feedback(self, context: str, feedback: str, feedback_type: str) -> None: 
+        context_words = context.split() 
+        feedback_words = feedback.split() 
+        for word in context_words: 
+            if word not in self.long_term_memory: 
+                self.long_term_memory[word] = [] 
+            if feedback_type == 'positive': 
+                self.long_term_memory[word].extend(feedback_words) 
+            elif feedback_type == 'negative': 
+                self.long_term_memory[word] = [w for w in self.long_term_memory[word] if w not in feedback_words] 
+            # 对于中立或模糊反馈，可以根据上下文权重动态调整 
+        self.update_contextual_weights(context, feedback) 
+ 
+    def update_contextual_weights(self, context: str, feedback: str) -> None: 
+        context_key = context.lower() 
+        if context_key not in self.contextual_weights: 
+            self.contextual_weights[context_key] = 1.0 
+        self.contextual_weights[context_key] += 0.5 
+        if self.contextual_weights[context_key] > 10: 
+            self.contextual_weights[context_key] = 10 
+ 
+    def interdisciplinary_mapping(self, term: str, domain: str) -> Union[str, None]: 
+        if term in self.interdisciplinary_knowledge: 
+            return self.interdisciplinary_knowledge[term].get(domain, None) 
+        return None 
+ 
+    def add_interdisciplinary_knowledge(self, term: str, domain: str, mapping: str) -> None: 
+        if term not in self.interdisciplinary_knowledge: 
+            self.interdisciplinary_knowledge[term] = {} 
+        self.interdisciplinary_knowledge[term][domain] = mapping 
+ 
+    def save_memory(self, filepath: str) -> None: 
+        with open(filepath, 'w') as f: 
+            json.dump({ 
+                'long_term_memory': self.long_term_memory, 
+                'memory_strength': self.memory_strength, 
+                'contextual_weights': self.contextual_weights, 
+                'last_access_time': self.last_access_time 
+            }, f) 
+ 
+    def load_memory(self, filepath: str) -> None: 
+        with open(filepath, 'r') as f: 
+            data = json.load(f) 
+            self.long_term_memory = data.get('long_term_memory', {}) 
+            self.memory_strength = data.get('memory_strength', {}) 
+            self.contextual_weights = data.get('contextual_weights', {}) 
+            self.last_access_time = data.get('last_access_time', {}) 
+
 def run_experiment(config: dict) -> dict: 
     logging.info(f"开始运行实验，配置: {config}")
+    # 初始化 CMEEngine
+    cme_engine = CMEEngine()
     """运行单次实验 
     参数: 
         config: 配置字典 (num_symbols, chua_alpha 等) 
@@ -45,7 +158,11 @@ def run_experiment(config: dict) -> dict:
             G.add_edge(reflected, child) 
  
         cme.update([s1, s2, combined, reflected] + children) 
- 
+        # 可以在这里使用 CMEEngine 进行一些操作，例如生成符号链
+        context = f"{s1} {s2} {combined} {reflected}"
+        symbol_chain = cme_engine.generate_symbol_chain(context)
+        logging.info(f"生成的符号链: {symbol_chain}")
+
     # 计算指标 
     phi = compute_phi(G) 
     closure_rate = compute_closure_rate(symbol_pairs, G) 

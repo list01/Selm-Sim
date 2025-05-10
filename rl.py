@@ -48,19 +48,9 @@ class QLearning:
         except ValueError:
             print(f"动作 {action} 不在动作空间中，跳过此次更新。")
 
-    def discretize_state(self, state: np.ndarray) -> int: 
-        """离散化状态（改进版） 
-        参数: 
-            state: 状态向量 
-        返回: 
-            离散状态索引 
-        """ 
-        # 简单示例：将每个维度的状态值映射到 0 - 9 的整数
-        discretized_state = np.floor(state * 10).astype(int) % 10
-        state_index = 0
-        for i, value in enumerate(discretized_state):
-            state_index += value * (10 ** i)
-        return state_index % self.q_table.shape[0]
+    def discretize_state(self, state: np.ndarray) -> int:
+        # 示例实现，根据实际需求调整
+        return int(np.sum(state))
 
 def compute_reward(phi: float, delta_w: float, s_ent: float) -> float: 
     """计算奖励函数 

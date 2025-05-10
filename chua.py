@@ -1,10 +1,8 @@
 import numpy as np
 from scipy.integrate import odeint
 
-def chua_circuit(x, t, alpha=15.6, beta=28):
+def chua_circuit(x, t, alpha=15.6, beta=28, m0=-1.143, m1=-0.714):
     def f(x):
-        m0 = -1/7
-        m1 = 2/7
         return m1 * x + 0.5 * (m0 - m1) * (np.abs(x + 1) - np.abs(x - 1))
     
     dxdt = [
