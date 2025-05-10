@@ -48,9 +48,30 @@ class QLearning:
         except ValueError:
             print(f"动作 {action} 不在动作空间中，跳过此次更新。")
 
-    def discretize_state(self, state: np.ndarray) -> int:
-        # 示例实现，根据实际需求调整
-        return int(np.sum(state))
+    def discretize_state(self, state: np.ndarray):
+        """
+        将连续的状态空间离散化为离散的状态索引。
+        这里假设状态是一个多维数组，每个维度被离散化为 10 个区间。
+        你可以根据实际情况调整离散化的粒度。
+
+        参数:
+            state (np.ndarray): 连续的状态数组。
+
+        返回:
+            int: 离散化后的状态索引。
+        """
+        num_bins = 10  # 每个维度的离散化区间数
+        bins = [np.linspace(-5, 5, num_bins) for _ in range(state.shape[0])]  # 假设状态值范围在 -5 到 5 之间
+        discrete_state = np.zeros(state.shape[0], dtype=int)
+        for i in range(state.shape[0]):
+            discrete_state[i] = np.digitize(state[i], bins[i]) - 1
+        # 将多维离散状态转换为一维索引
+        index = 0
+        multiplier = 1
+        for i in range(state.shape[0]):
+            index += discrete_state[i] * multiplier
+            multiplier *= num_bins
+        return index
 
 def compute_reward(phi: float, delta_w: float, s_ent: float) -> float: 
     """计算奖励函数 

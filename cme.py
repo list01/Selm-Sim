@@ -66,3 +66,52 @@ class CME:
             total += expected_hits
             hits += len(associated)
         return hits / total if total > 0 else 0.0
+
+
+import time
+import math
+from typing import List, Dict, Any
+
+class CMEEngine:
+    def __init__(self):
+        self.symbol_chains = []
+        self.long_term_memory = {}
+        self.feedback_history = []
+        self.memory_strength = {}
+        self.last_access_time = {}
+        self.adaptive_decay_rate = 0.1
+
+    def update_memory_strength(self, symbol: str):
+        current_time = time.time()
+        last_access = self.last_access_time.get(symbol, current_time)
+        time_decay = math.exp(-(current_time - last_access) * self.adaptive_decay_rate)
+        self.memory_strength[symbol] = self.memory_strength.get(symbol, 1) * time_decay + 0.1
+        if self.memory_strength[symbol] > 10:
+            self.memory_strength[symbol] = 10
+
+    def update_last_access_time(self, symbol: str):
+        self.last_access_time[symbol] = time.time()
+
+    def feedback_loop(self, context: str, feedback: str, feedback_type: str = 'neutral'):
+        self.feedback_history.append((context, feedback, feedback_type))
+        context_words = context.split()
+        feedback_words = feedback.split()
+        for word in context_words:
+            if word not in self.long_term_memory:
+                self.long_term_memory[word] = []
+            if feedback_type == 'positive':
+                self.long_term_memory[word].extend(feedback_words)
+            elif feedback_type == 'negative':
+                self.long_term_memory[word] = [w for w in self.long_term_memory[word] if w not in feedback_words]
+            self.update_memory_strength(word)
+            self.update_last_access_time(word)
+
+    def adjust_decay_rate(self):
+        # 根据反馈历史动态调整衰减率
+        positive_count = sum(1 for _, _, t in self.feedback_history if t == 'positive')
+        negative_count = sum(1 for _, _, t in self.feedback_history if t == 'negative')
+        if positive_count > negative_count:
+            self.adaptive_decay_rate *= 0.9
+        else:
+            self.adaptive_decay_rate *= 1.1
+        self.adaptive_decay_rate = max(0.01, min(0.5, self.adaptive_decay_rate))

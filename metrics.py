@@ -5,6 +5,9 @@ from typing import List
 import numpy as np
 import networkx as nx
 from .symbol import Symbol
+from sklearn.cluster import DBSCAN
+import numpy as np
+from src.cme_milvus import CME_Milvus
 
 def custom_jaccard_similarity(set1, set2):
     """
@@ -32,8 +35,30 @@ def compute_phi(G: nx.Graph, num_nodes: int = 100) -> float:
     Returns:
         float: Φ value (simulated value 1.27, to be verified by experiment).
     """
-    # Placeholder, actual implementation needs minimum cut mutual information
-    return 1.27
+    # 尝试使用最小割互信息实现
+    if len(G.nodes()) == 0:
+        return 0
+    
+    # 生成所有可能的二分划分
+    import itertools
+    nodes = list(G.nodes())
+    min_phi = float('inf')
+    
+    for i in range(1, len(nodes) // 2 + 1):
+        for partition in itertools.combinations(nodes, i):
+            partition1 = set(partition)
+            partition2 = set(nodes) - partition1
+            
+            # 计算割边
+            cut_edges = nx.cut_size(G, partition1, partition2)
+            
+            # 简单示例：使用割边数量作为互信息的近似
+            phi = cut_edges
+            
+            if phi < min_phi:
+                min_phi = phi
+    
+    return min_phi
 
 def compute_closure_rate(symbol_pairs: List[tuple], G: nx.Graph) -> float:
     """
@@ -92,3 +117,23 @@ def compute_holographic_entropy(symbol: Symbol, phi: float, sim_matrix: np.ndarr
     phi_term = lambda_ * phi
     sim_term = mu * np.sum(sim_matrix)
     return prop_term + phi_term + sim_term
+
+
+class MetricsCalculator:
+    def __init__(self, milvus_collection_name):
+        self.milvus = CME_Milvus(milvus_collection_name)
+
+    def calculate_closure_rate(self, embeddings, eps=0.5, min_samples=5):
+        clustering = DBSCAN(eps=eps, min_samples=min_samples).fit(embeddings)
+        core_samples_mask = np.zeros_like(clustering.labels_, dtype=bool)
+        core_samples_mask[clustering.core_sample_indices_] = True
+        labels = clustering.labels_
+        n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
+        n_noise_ = list(labels).count(-1)
+        # 简单示例：闭合率计算
+        closure_rate = n_clusters_ / (len(embeddings) - n_noise_) if (len(embeddings) - n_noise_) > 0 else 0
+        return closure_rate
+
+    def semantic_similarity_check(self, query_embedding, top_k=10):
+        results = self.milvus.semantic_search(query_embedding, top_k)
+        return results
